@@ -1,12 +1,9 @@
 package com.macprogram;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.imageio.ImageIO;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.awt.event.*;
 import javax.swing.*;
 
 // https://www.javatpoint.com/java-swing -- as a reference for learning
@@ -24,74 +21,164 @@ public class MACFinder extends JFrame implements ActionListener
 	JButton confirmButton, cancelButton;
 	JPanel panel;
 	
+	InetAddress localHost;
+	
 	public MACFinder()
-	{
-		
-		 // FRAME
-		 setSize(640, 400);
-		 setLocation(750, 750);
-		 setTitle("Robot Setup");
-//		 JFrame frame = new JFrame("Robot Setup");		 
-//		 frame.setSize(750, 750);
-		 setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS)); // border layout is good
-		 setLocationRelativeTo(null);
-		 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		 setIconImage(new ImageIcon("/Users/johnlloyd/Documents/Coding/Brunel Internship/BrunelLogo.jpg").getImage());
+	{	
+		// FRAME 
+		setSize(640, 400);
+		setLocation(750, 750);
+		setTitle("Robot Setup");
+		setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS)); // border layout is good
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setIconImage(new ImageIcon("/Users/johnlloyd/Documents/Coding/Brunel Internship/BrunelLogo.jpg").getImage());
 		 
-//		 //PANEL
-// 		 panel = new JPanel();
-// 		 panel.setSize(300, 300);
-// 		 panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-		 
-//		 // IMAGE
-//		 ImageIcon icon = new ImageIcon("/Users/johnlloyd/Documents/Coding/Brunel Internship/BrunelLogo.jpg");
-//		 Image scaleImage = icon.getImage().getScaledInstance(28, 28,Image.SCALE_DEFAULT);
-//		 getContentPane().add(new JLabel(new ImageIcon("/Users/johnlloyd/Documents/Coding/Brunel Internship/BrunelLogo.jpg")));
+		// IMAGE
+//		ImageIcon icon = new ImageIcon("/Users/johnlloyd/Documents/Coding/Brunel Internship/BrunelLogo.jpg");
+//		Image scaleImage = icon.getImage().getScaledInstance(28, 28,Image.SCALE_DEFAULT);
+//		getContentPane().add(new JLabel(new ImageIcon("/Users/johnlloyd/Documents/Coding/Brunel Internship/BrunelLogo.jpg")));
 		 
 		 // TEXTFIELDS
-		 student_ID = new JTextField("Student ID"); // should only take numbers (equal to 7 digits)
-		 student_ID.setPreferredSize(new Dimension(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT));
-		 add(student_ID, Component.CENTER_ALIGNMENT); 
+		student_ID = new JTextField(); // should only take numbers (equal to 7 digits)
+		student_ID.setPreferredSize(new Dimension(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT));
+		student_ID.setHorizontalAlignment(JTextField.CENTER);
+		student_ID.addKeyListener(new KeyAdapter() 
+		{
+	        public void keyPressed(KeyEvent ke) 
+	        {
+	            String value = student_ID.getText();
+	            int l = value.length();
+	            if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') // -- need to include backspace && ke.getKeyChar() == KeyEvent.VK_BACK_SPACE) 
+	            {
+	               student_ID.setEditable(true);
+	            } 
+	            else 
+	            {
+	               student_ID.setEditable(false);
+	               System.out.println("* Enter only numeric digits(0-9)");
+	            }
+	         }
+	      });
+		add(student_ID, Component.CENTER_ALIGNMENT); 
 		 
-		 first_name = new JTextField("First name");
-		 first_name.setPreferredSize(new Dimension(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT));
-		 add(first_name, Component.CENTER_ALIGNMENT); 
+		first_name = new JTextField();
+		first_name.addKeyListener(new KeyAdapter() 
+		{
+	        public void keyPressed(KeyEvent ke) 
+	        {
+	            String value = first_name.getText();
+	            int l = value.length();
+	            if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') 
+	            {
+	               first_name.setEditable(false);
+	               System.out.println("Error, only input letters");
+	            } 
+	            else 
+	            {
+	               first_name.setEditable(true);
+	            }
+	         }
+	      });
+		first_name.setPreferredSize(new Dimension(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT));
+		first_name.setHorizontalAlignment(JTextField.CENTER);
+		add(first_name, Component.CENTER_ALIGNMENT); 
 		 
-		 last_name = new JTextField("Last name");
-		 last_name.setPreferredSize(new Dimension(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT));
-		 add(last_name, Component.CENTER_ALIGNMENT); 
+		last_name = new JTextField();
+		last_name.setPreferredSize(new Dimension(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT));
+		last_name.setHorizontalAlignment(JTextField.CENTER);
+		add(last_name, Component.CENTER_ALIGNMENT); 
 		 
-		 // BUTTONS
-		 confirmButton = new JButton("Confirm");
-		 //confirmButton.setBounds(50, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
-		 add(confirmButton, Component.CENTER_ALIGNMENT);
-		 confirmButton.addActionListener(this);
+		// BUTTONS
+		confirmButton = new JButton("Confirm");
+		//confirmButton.setBounds(50, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
+		add(confirmButton, Component.CENTER_ALIGNMENT);
+		confirmButton.addActionListener(this);
 		 
-		 cancelButton = new JButton("Cancel");
-		 //cancelButton.setBounds(50, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
-		 add(cancelButton, Component.RIGHT_ALIGNMENT);
+		cancelButton = new JButton("Cancel");
+		//cancelButton.setBounds(50, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
+		add(cancelButton, Component.RIGHT_ALIGNMENT);
 		
-		 // Set the window to be visible as the default to be false
-		 //add(panel);
-		 //pack();
-		 setVisible(true); 
+		setVisible(true); 
 	}
 	
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         System.out.println("Welcome... starting GUI");
         
         // invokes constructor (for frame)
         new MACFinder();
+        
+     // gets Internet address of local machine
+     		InetAddress ip = InetAddress.getLocalHost();
+     		System.out.println("Current IP address: " + ip);
+     		
+     		// get network interface that has ip address bound to it
+     		NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+     		
+     		// get MAC address from the network interface in byte
+     		byte[] mac = network.getHardwareAddress();
+     		System.out.println("Current MAC address: " + mac);
+     		
+     		// displays MAC address
+     		StringBuilder sb = new StringBuilder();
+     		for(int i = 0; i < mac.length; i++)
+     		{
+     			sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+     		}
+     		
+     		System.out.println(sb.toString());
+        
+       // MACFinder GM = new MACFinder();
     }
-
+    
 	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
-		if(e.getSource() == confirmButton)
+		if (student_ID.getText().equals(""))
+		{
+			System.out.println("Error, please enter your student ID");
+		}
+		else if (student_ID.getText().length() != 7)
+		{
+			System.out.println("Error, your student ID must be 7 digits in length");
+		}
+		else if (first_name.getText().equals(""))
+		{
+			System.out.println("Error, please enter your first name");
+		}
+		else if (last_name.getText().equals(""))
+		{
+			System.out.println("Error, please enter your last name");
+		}
+		else
 		{
 			System.out.println("Your student ID is: " + student_ID.getText());
+			System.out.println("Your first name is: " + first_name.getText());
+			System.out.println("Your last name is: " + last_name.getText());
+		}
+	}    
+	
+	public void getMac() throws Exception
+	{		
+		// gets Internet address of local machine
+		InetAddress ip = InetAddress.getLocalHost();
+		System.out.println("Current IP address: " + ip);
+		
+		// get network interface that has ip address bound to it
+		NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+		
+		// get MAC address from the network interface in byte
+		byte[] mac = network.getHardwareAddress();
+		System.out.println("Current MAC address: " + mac);
+		
+		// displays MAC address
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < mac.length; i++)
+		{
+			sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
 		}
 		
-	}    
+		System.out.println(sb.toString());
+	}
 }
