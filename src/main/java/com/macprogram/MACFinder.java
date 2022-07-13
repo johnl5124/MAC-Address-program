@@ -1,10 +1,33 @@
 package com.macprogram;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.awt.event.*;
-import javax.swing.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 // https://www.javatpoint.com/java-swing -- as a reference for learning
 // https://docs.oracle.com/javase/tutorial/uiswing/layout/visual.html -- layouts...
@@ -109,27 +132,27 @@ public class MACFinder extends JFrame implements ActionListener
         // invokes constructor (for frame)
         new MACFinder();
         
-     // gets Internet address of local machine
-     		InetAddress ip = InetAddress.getLocalHost();
-     		System.out.println("Current IP address: " + ip);
-     		
-     		// get network interface that has ip address bound to it
-     		NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-     		
-     		// get MAC address from the network interface in byte
-     		byte[] mac = network.getHardwareAddress();
-     		System.out.println("Current MAC address: " + mac);
-     		
-     		// displays MAC address
-     		StringBuilder sb = new StringBuilder();
-     		for(int i = 0; i < mac.length; i++)
-     		{
-     			sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-     		}
-     		
-     		System.out.println(sb.toString());
+        MACFinder GM = new MACFinder();
+        GM.getMac();
         
-       // MACFinder GM = new MACFinder();
+        System.out.println();
+        
+        try
+        {
+        	GM.generateQRCodeImage();
+        }
+        catch (WriterException e)
+        {
+        	System.out.println("Couldn't generate QR code, WriterException...");
+        }
+        catch (IOException e)
+        {
+        	System.out.println("Couldn't generate QR code, IOException...");
+        }
+        catch (NotFoundException e)
+        {
+        	System.out.println("This horrible library can't be found... (ZXing)");
+        }
     }
     
 	@Override
@@ -159,6 +182,29 @@ public class MACFinder extends JFrame implements ActionListener
 		}
 	}    
 	
+	public void generateQRCodeImage() throws WriterException, IOException, NotFoundException
+	{
+		String data = "https://www.youtube.com/watch?v=qzYpgbP8RHA";
+		String path = "C:\\Users\\JmJ23\\Documents\\Code\\Internship Code";
+		String charset = "UTF-8";
+		
+		//the BitMatrix class represents the 2D matrix of bits  
+		//MultiFormatWriter is a factory class that finds the appropriate Writer subclass for the BarcodeFormat requested and encodes the barcode with the supplied contents.  
+		BitMatrix matrix = new MultiFormatWriter()
+				.encode(new String(data.getBytes(charset), charset), BarcodeFormat.QR_CODE, 500, 500);  
+		
+		MatrixToImageWriter.writeToFile(matrix, path.substring(path.lastIndexOf('.') + 1), new File(path));  
+		
+//		String data = "https://www.youtube.com/watch?v=qzYpgbP8RHA";
+//		String filepath = "C:\\Users\\JmJ23\\Documents\\Code\\Internship Code";
+//		
+//		QRCodeWriter qrCodeWriter = new QRCodeWriter();
+//        BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 250, 250);
+//
+//        Path path = FileSystems.getDefault().getPath(filepath);
+//        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+	}
+	
 	public void getMac() throws Exception
 	{		
 		// gets Internet address of local machine
@@ -170,7 +216,6 @@ public class MACFinder extends JFrame implements ActionListener
 		
 		// get MAC address from the network interface in byte
 		byte[] mac = network.getHardwareAddress();
-		System.out.println("Current MAC address: " + mac);
 		
 		// displays MAC address
 		StringBuilder sb = new StringBuilder();
@@ -179,6 +224,6 @@ public class MACFinder extends JFrame implements ActionListener
 			sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
 		}
 		
-		System.out.println(sb.toString());
+		System.out.println("MAC address: " + sb.toString());
 	}
 }
