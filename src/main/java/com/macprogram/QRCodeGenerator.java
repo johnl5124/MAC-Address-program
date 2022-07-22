@@ -18,18 +18,6 @@ public class QRCodeGenerator
 		return MatrixToImageWriter.toBufferedImage(bitMatrix);
 	}
 
-	//	public String generateQRCodeImage() throws Exception
-	//	{
-	//		final String data = "https://www.youtube.com/watch?v=qzYpgbP8RHA";
-	//		final String filepath = "C:\\Users\\JmJ23\\Documents\\Code\\Internship Code\\QRcode.png";
-	//
-	//		QRCodeWriter qrCodeWriter = new QRCodeWriter();
-	//		BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 250, 250);
-	//
-	//		final Path path = FileSystems.getDefault().getPath(filepath);
-	//		MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-	//		
-	//		return "QR Code successfully generated...";
-	//	}
+
 }
 

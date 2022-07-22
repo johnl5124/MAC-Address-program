@@ -6,11 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -18,10 +21,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import java.awt.image.BufferedImage;
 
 // https://www.javatpoint.com/java-swing -- as a reference for learning
 // https://docs.oracle.com/javase/tutorial/uiswing/layout/visual.html -- layouts...
@@ -34,7 +37,9 @@ public class MACFinder extends JFrame implements ActionListener
 	private final int TEXTFIELD_WIDTH = 100;
 	private final int TEXTFIELD_HEIGHT = 20;
 
-	JTextField student_ID, first_name, last_name;
+	static JTextField student_ID;
+	static JTextField first_name;
+	static JTextField last_name;
 	JButton confirmButton, cancelButton;
 	JPanel panel;
 
@@ -123,38 +128,62 @@ public class MACFinder extends JFrame implements ActionListener
 	{
 		System.out.println("Welcome... starting GUI");
 
-		// invokes constructor (for frame)
-		new MACFinder();
-
 		final MACFinder GM = new MACFinder();
 
-		GM.getMac();
+		getMac();
 
 		System.out.println();
 
 		//QRCodeGenerator qrgen = new QRCodeGenerator();
 
-		GM.generateQRCodeImage();
+		//GM.generateQRCodeImage();
 	}
 
-	public String generateQRCodeImage() throws Exception
-	{
-		final String data = "https://www.youtube.com/watch?v=qzYpgbP8RHA";
-		final String filepath = ".//QRcode.png";
+//	public void generateQRCodeImage() throws Exception
+//	{
+//		// creates JSON object...
+//		JSONObject JSONobj = new JSONObject();
+//
+//		JSONobj.put("student_info", new String[] { 
+//				student_ID.getText(), 
+//				first_name.getText(), 
+//				last_name.getText(),
+//				getMac()});
+//
+//		// With four indent spaces
+//		//System.out.println(JSONobj.toString(4));
+//		
+//		//final String data = "https://www.codevoila.com/post/65/java-json-tutorial-and-example-json-java-orgjson";
+//		final String data = JSONobj.toString(4);
+//		final String filepath = ".//QRcode.png";
+//
+//		QRCodeWriter qrCodeWriter = new QRCodeWriter();
+//		BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 450, 450);
+//
+//		final Path path = FileSystems.getDefault().getPath(filepath);
+//		MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+//
+//		System.out.println("QR Code succuessfully generated...");
+//	}
 
-		QRCodeWriter qrCodeWriter = new QRCodeWriter();
-		BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 450, 450);
-
-		final Path path = FileSystems.getDefault().getPath(filepath);
-		MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-
-		System.out.println("QR Code succuessfully generated...");
-		
-		return "QR Code successfully generated...";
-	}
+//	// get rid of static ...
+//	private static void createJSON() throws JSONException, Exception 
+//	{    		
+//		// creates JSON object...
+//		JSONObject JSONobj = new JSONObject();
+//
+//		JSONobj.put("student_info", new String[] { 
+//				student_ID.getText(), 
+//				first_name.getText(), 
+//				last_name.getText(),
+//				getMac()});
+//
+//		// With four indent spaces
+//		System.out.println(JSONobj.toString(4));
+//	}
 
 	@Override
-	public void actionPerformed(final ActionEvent e) 
+	public void actionPerformed(final ActionEvent e)
 	{
 		if (student_ID.getText().equals(""))
 		{
@@ -174,17 +203,58 @@ public class MACFinder extends JFrame implements ActionListener
 		}
 		else
 		{
-			System.out.println("Your student ID is: " + student_ID.getText());
-			System.out.println("Your first name is: " + first_name.getText());
-			System.out.println("Your last name is: " + last_name.getText());
+			// creates JSON object...
+			JSONObject JSONobj = new JSONObject();
+
+			try 
+			{
+				JSONobj.put("student_info", new String[] { 
+						student_ID.getText(), 
+						first_name.getText(), 
+						last_name.getText(),
+						getMac()});
+			} 
+			catch (JSONException e2) 
+			{
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (Exception e2) 
+			{
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+
+			// With four indent spaces
+			//System.out.println(JSONobj.toString(4));
+			
+			//final String data = "https://www.codevoila.com/post/65/java-json-tutorial-and-example-json-java-orgjson";
+			final String data = JSONobj.toString(4);
+			final String filepath = ".//QRcode.png";
+
+			QRCodeWriter qrCodeWriter = new QRCodeWriter();
+			BitMatrix bitMatrix;
+			try 
+			{
+				bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 450, 450);
+				
+				final Path path = FileSystems.getDefault().getPath(filepath);
+				MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+
+				System.out.println("QR Code succuessfully generated...");
+			} 
+			catch (WriterException | IOException e1) 
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}    
 
-	public void getMac() throws Exception
+	public static String getMac() throws Exception
 	{		
 		// gets Internet address of local machine
 		final InetAddress ip = InetAddress.getLocalHost();
-		System.out.println("Current IP address: " + ip);
+		//System.out.println("Current IP address: " + ip);
 
 		// get network interface that has ip address bound to it
 		final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
@@ -199,6 +269,8 @@ public class MACFinder extends JFrame implements ActionListener
 			sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
 		}
 
-		System.out.println("MAC address: " + sb.toString());
+		return ("MAC address: " + sb.toString());
+
+		//System.out.println("MAC address: " + sb.toString());
 	}
 }
