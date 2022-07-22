@@ -23,7 +23,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.macprogram.MACFinder</mainClass>
+                  <mainClass>com.macprogram.Main</mainClass>
                 </transformer>
               </transformers>
             </configuration>
