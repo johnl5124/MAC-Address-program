@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
-public class ProgramMainInterface extends JFrame implements ActionListener
+public class ProgramMainInterface extends JFrame
 {
 	// constants for button/textfield sizes etc..
 	private final int BUTTON_WIDTH = 100;
@@ -43,6 +43,9 @@ public class ProgramMainInterface extends JFrame implements ActionListener
 		//		Image scaleImage = icon.getImage().getScaledInstance(28, 28,Image.SCALE_DEFAULT);
 		//		getContentPane().add(new JLabel(new ImageIcon("/Users/johnlloyd/Documents/Coding/Brunel Internship/BrunelLogo.jpg")));
 
+//		// PANEL
+//		panel.setSize(maxSize);
+		
 		// TEXTFIELDS
 		student_ID = new JTextField(); // should only take numbers (equal to 7 digits)
 		student_ID.setPreferredSize(new Dimension(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT));
@@ -53,7 +56,7 @@ public class ProgramMainInterface extends JFrame implements ActionListener
 			{
 				final String value = student_ID.getText();
 				final int l = value.length();
-				if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') // -- need to include backspace && ke.getKeyChar() == KeyEvent.VK_BACK_SPACE) 
+				if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9' || ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)
 				{
 					student_ID.setEditable(true);
 				} 
@@ -95,66 +98,93 @@ public class ProgramMainInterface extends JFrame implements ActionListener
 
 		// BUTTONS
 		confirmButton = new JButton("Confirm");
+		confirmButton.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if (student_ID.getText().equals(""))
+				{
+					System.out.println("Error, please enter your student ID");
+				}
+				else if (student_ID.getText().length() != 7)
+				{
+					System.out.println("Error, your student ID must be 7 digits in length");
+				}
+				else if (first_name.getText().equals(""))
+				{
+					System.out.println("Error, please enter your first name");
+				}
+				else if (last_name.getText().equals(""))
+				{
+					System.out.println("Error, please enter your last name");
+				}
+				else
+				{
+					QRCodeGenerator obj = new QRCodeGenerator();
+
+					try 
+					{
+						obj.generateQR();
+
+						JOptionPane.showMessageDialog(null, "QR code generated, check your desktop.", "Program message...", 1);
+					} 
+					catch (Exception e1) 
+					{
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		//confirmButton.setBounds(50, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
 		add(confirmButton, Component.CENTER_ALIGNMENT);
-		confirmButton.addActionListener(this);
 
-		cancelButton = new JButton("Cancel");
+		cancelButton = new JButton("Cancel/Exit");
+		cancelButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				Object[] options = {"Yes", "No"};
+
+				int exit = JOptionPane.showOptionDialog(null, 
+						"Are you sure you wish to exit?", 
+						"Program message...", 
+						JOptionPane.NO_OPTION, 
+						JOptionPane.YES_OPTION, 
+						null, 
+						options, 
+						options[1]);
+
+				if (exit == JOptionPane.YES_OPTION)
+				{
+					System.out.println("Exiting program...");
+
+					System.exit(0);
+				}
+				else if (exit == JOptionPane.NO_OPTION)
+				{
+
+				}
+			}
+		});
 		//cancelButton.setBounds(50, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
 		add(cancelButton, Component.RIGHT_ALIGNMENT);
 
 		setVisible(true); 
 	}
-	
+
 	public static String getStudentID()
 	{	
 		return student_ID.getText();
 	}
-	
+
 	public static String getFirstName()
 	{
 		return first_name.getText();
 	}
-	
+
 	public static String getLastName()
 	{
 		return last_name.getText();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) 
-	{
-		if (student_ID.getText().equals(""))
-		{
-			System.out.println("Error, please enter your student ID");
-		}
-		else if (student_ID.getText().length() != 7)
-		{
-			System.out.println("Error, your student ID must be 7 digits in length");
-		}
-		else if (first_name.getText().equals(""))
-		{
-			System.out.println("Error, please enter your first name");
-		}
-		else if (last_name.getText().equals(""))
-		{
-			System.out.println("Error, please enter your last name");
-		}
-		else
-		{
-			QRCodeGenerator obj = new QRCodeGenerator();
-			
-			try 
-			{
-				obj.generateQR();
-				
-				JOptionPane.showMessageDialog(null, "QR code generated, check your desktop.", "Program message...", 1);
-			} 
-			catch (Exception e1) 
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
 	}
 }

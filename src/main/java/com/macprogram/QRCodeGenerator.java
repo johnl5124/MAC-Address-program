@@ -16,31 +16,31 @@ public class QRCodeGenerator
 
 	public void generateQR() throws Exception
 	{
-		// creates JSON object...
-		JSONObject JSONobj = new JSONObject();
+		// // creates JSON object...
+		// JSONObject JSONobj = new JSONObject();
 
-		try 
-		{
-			JSONobj.put("student_info", new String[] { 
-					ProgramMainInterface.getStudentID(),
-					ProgramMainInterface.getFirstName(),
-					ProgramMainInterface.getLastName(),
-					macObj.getMac()});
-		} 
-		catch (JSONException e2) 
-		{
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (Exception e2) 
-		{
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		// try 
+		// {
+		// 	JSONobj.put("student_info", new String[] { 
+		// 			ProgramMainInterface.getStudentID(),
+		// 			ProgramMainInterface.getFirstName(),
+		// 			ProgramMainInterface.getLastName(),
+		// 			macObj.getMac()});
+		// } 
+		// catch (JSONException e2) 
+		// {
+		// 	// TODO Auto-generated catch block
+		// 	e2.printStackTrace();
+		// } catch (Exception e2) 
+		// {
+		// 	// TODO Auto-generated catch block
+		// 	e2.printStackTrace();
+		// }
 
-		// With four indent spaces
-		//System.out.println(JSONobj.toString(4));
+		// System.out.println(JSONobj.toString(4));
 
-		final String data = JSONobj.toString(4);
+		// final String data = JSONobj.toString(4);
+		final String data = "https://134.83.82.37:7259";
 		final String filepath = ".//QRcode.png";
 
 		QRCodeWriter qrCodeWriter = new QRCodeWriter();
