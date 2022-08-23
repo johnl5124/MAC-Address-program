@@ -266,7 +266,6 @@ public class ProgramMainInterface extends JFrame {
 			}
 		});
 
-		// boolean allLetters =
 		firstname_input.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {

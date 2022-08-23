@@ -39,7 +39,7 @@ public class QRCodeGenerator {
 		final String data = "https://134.83.82.37:7259";
 		File desktopPath = FileSystemView.getFileSystemView().getHomeDirectory();
 		desktopPath.getAbsolutePath();
-		final String filePath = desktopPath + ".//QRcode.png";
+		final String filePath = desktopPath + "/QRcode.png";
 
 		QRCodeWriter qrCodeWriter = new QRCodeWriter();
 		BitMatrix bitMatrix;
