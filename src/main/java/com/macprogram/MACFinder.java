@@ -6,15 +6,12 @@ import java.net.NetworkInterface;
 // https://www.javatpoint.com/java-swing -- as a reference for learning
 // https://docs.oracle.com/javase/tutorial/uiswing/layout/visual.html -- layouts...
 
-public class MACFinder
-{
+public class MACFinder {
 	InetAddress localHost;
 
-	public String getMac() throws Exception
-	{		
+	public String getMac() throws Exception {
 		// gets Internet address of local machine
 		final InetAddress ip = InetAddress.getLocalHost();
-		//System.out.println("Current IP address: " + ip);
 
 		// get network interface that has ip address bound to it
 		final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
@@ -24,8 +21,7 @@ public class MACFinder
 
 		// displays MAC address
 		final StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < mac.length; i++)
-		{
+		for (int i = 0; i < mac.length; i++) {
 			sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
 		}
 
